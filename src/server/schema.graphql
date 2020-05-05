@@ -1,0 +1,84 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Query {
+  game(id: ID!): Game
+}
+
+type Mutation {
+  createGame(parameters: GameParameters!): Game
+  joinGame(gameId: ID!): JoinGameResult
+  makeMove(parameters: MakeMoveParameters!): GameState # GameState as a result is sufficient but could be also whole Game object
+}
+
+type Subscription {
+  gameStateChanged(id: ID!): GameState
+}
+
+type Game {
+  id: ID!
+  state: GameState!
+  playerType1: PlayerType!
+  playerType2: PlayerType!
+  movesHistory: [Move]!
+}
+
+# TODO: Consider using union type to encode different game states (waiting for players to join -> in progress -> finished)
+type GameState {
+  stage: GameStage!
+  currentPlayer: Player # player that makes next move, empty for not started/finished game
+  board: [[FieldState]]!
+  winner: Player # non-empty if and only if game is finished with non-draw result
+}
+
+type Move {
+  player: Player!
+  position: Position!
+}
+
+type Position {
+  x: Int!
+  y: Int!
+}
+
+type GameParameters {
+  playerType1: PlayerType!
+  playerType2: PlayerType!
+}
+
+type JoinGameResult {
+  player: Player! # player mark that was drawn for client joining the game
+  token: String!
+  game: Game!
+}
+
+type MakeMoveParameters {
+  gameId: ID!
+  token: String!
+  position: Postion!
+}
+
+enum Player {
+  X
+  O
+}
+
+enum FieldState {
+  EMPTY
+  X
+  O
+}
+
+enum PlayerType {
+  HUMAN
+  BOT
+}
+
+enum GameStage {
+  WAITING_FOR_PLAYERS
+  IN_PROGRESS
+  FINISHED
+}
