@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { ApolloError, ApolloServer, Config, makeExecutableSchema } from 'apollo-server'
 
+import { createLogger } from '../common/lib/logging'
+
+import { ApolloLogging } from './logging/ApolloLogging'
 import { getTypeDefs, GQLResolver } from './schema'
 
 export const initServer = async (serverName: string) => {
@@ -39,14 +43,19 @@ export const initServer = async (serverName: string) => {
     resolvers: resolvers as any,
   })
 
+  const logger = createLogger('ApolloServer')
+
   const serverConfig: Config = {
     schema,
+    logger,
+    debug: true,
+    extensions: [() => new ApolloLogging(logger)],
   }
 
   const server = new ApolloServer(serverConfig)
 
   server.listen().then(({ url }) => {
     // eslint-disable-next-line no-console
-    console.log(`${serverName} Server ready at ${url}`)
+    logger.info(`${serverName} Server ready at ${url}`)
   })
 }

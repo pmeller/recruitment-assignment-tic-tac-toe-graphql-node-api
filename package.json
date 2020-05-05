@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "LOG_LEVEL=info ts-node src/index.ts",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint --ext .ts .",
     "format": "npm run format-code && npm run format-assets",

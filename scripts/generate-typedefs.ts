@@ -17,7 +17,7 @@ generateTypeScriptTypes(schema, OUTPUT_PATH, {
   .then(() => {
     process.exit(0)
   })
-  .catch((err) => {
+  .catch(err => {
     // eslint-disable-next-line no-console
     console.error(err)
     process.exit(1)

@@ -78,3 +78,9 @@ Notable alternatives:
 Other GraphQL tools used in this project:
 
 - [graphql-schema-typescript](https://github.com/dangcuuson/graphql-schema-typescript) for generating typesafe resolver types (unfortunatenly it doesn't support `graphql@>=14` yet)
+
+### Logging mechanism
+
+I've implemented simple custom logging mechanism based on built-in `console` that can be extended to more production-ready solution in the future (log level can be adjusted by setting environment variable `LOG_LEVEL=debug|info|warn|error`).
+
+It seems that built-in Apollo Server logging is quite poor (even with `debug` flag set) so I prepared extension for more informative logging.
