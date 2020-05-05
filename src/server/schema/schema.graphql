@@ -36,17 +36,9 @@ type GameState {
 
 type Move {
   player: Player!
-  position: Position!
-}
-
-type Position {
-  x: Int!
-  y: Int!
-}
-
-type GameParameters {
-  playerType1: PlayerType!
-  playerType2: PlayerType!
+  # position index starts from 0
+  positionX: Int!
+  positionY: Int!
 }
 
 type JoinGameResult {
@@ -55,10 +47,17 @@ type JoinGameResult {
   game: Game!
 }
 
-type MakeMoveParameters {
+input GameParameters {
+  playerType1: PlayerType!
+  playerType2: PlayerType!
+}
+
+input MakeMoveParameters {
   gameId: ID!
   token: String!
-  position: Postion!
+  # position index starts from 0
+  positionX: Int!
+  positionY: Int!
 }
 
 enum Player {

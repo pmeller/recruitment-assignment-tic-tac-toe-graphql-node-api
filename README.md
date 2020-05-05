@@ -35,12 +35,12 @@ I've picked standard set of tools that make me productive when working with Type
 - eslint with TS support for basic static code analysis
 - prettier for auto-formatting
 - NVM for ensuring proper Node version
-- NPM for package management and scripts
+- yarn for package management and scripts (NPM is my default but it came out during development that I need yarn's resolutions mechanism)
 - [ts-node](https://github.com/TypeStrong/ts-node) for local execution environment
 
 Tools to consider for larger codebases:
 
-- [yarn with workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) for working with monorepo
+- [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) for working with monorepo
 - [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) for enforcing proper dependency graph
 - [ts-unused-imports](https://github.com/pzavolinsky/ts-unused-exports) to keep modules encapsulated
 
@@ -54,7 +54,7 @@ Notable mention for code-first approach is [NestJS](https://docs.nestjs.com/grap
 
 ### GraphQL: API design
 
-API definition is rather simple and straightforward, please also see remarks as comments in schema definition. I tried to follow GraphQL best practices like: keeping API use case-oriented, provide separate types for input/output data.
+[API definition](src/server/schema/schema.graphql) is rather simple and straightforward, please also see remarks as comments in schema definition. I tried to follow GraphQL best practices like: keeping API use case-oriented, provide separate types for input/output data.
 
 Main problem that I can see in current schema (but won't cover it in this assignment because it's time consuming) is proper **error handling** on API level. Every mutation can result in few distinct types of errors which could be nice to cover on schema level (by providing some generic Either-like result type).
 
@@ -65,3 +65,16 @@ My initial thoughts on GraphQL:
 - it's use case-oriented which makes easier to implement actions like "create game" and "join game" (in comparison to resource-oriented REST)
 - syntax is in fact human-readable
 - `!` suffix notation for non-nullable properties/params is weird, `?` suffix for nullable (like in TypeScript, Kotlin) seems more readable
+
+### GraphQL: server technology
+
+Apollo Server is dominating server technology for GraphQL in Node community. I've choosen it to implement the assignment because of availability of resources/extensions and also for simplicity (other tools come with unnecessary overhead).
+
+Notable alternatives:
+
+- [graphql-yoga](https://github.com/prisma-labs/graphql-yoga) - built on top of Apollo Server, comes with a lot more defaults
+- previously mentioned [NestJS](https://docs.nestjs.com/graphql/quick-start) with code-first approach, also built on top of Apollo Server
+
+Other GraphQL tools used in this project:
+
+- [graphql-schema-typescript](https://github.com/dangcuuson/graphql-schema-typescript) for generating typesafe resolver types (unfortunatenly it doesn't support `graphql@>=14` yet)
