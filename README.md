@@ -22,6 +22,45 @@ Remarks:
 - AI can make random moves for simplicity
 - Usage of DB is not necessary (please ensure that can be easily added in the future)
 
+## How to run
+
+Prerequisites:
+
+- [nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- [yarn](https://yarnpkg.com/getting-started/install)
+
+Installing dependencies:
+
+```bash
+nvm install
+yarn install
+```
+
+Running project in development mode with `ts-node`:
+
+```bash
+yarn start
+```
+
+Running tests (unit and integration):
+
+```bash
+yarn test
+```
+
+Running linter and typechecking:
+
+```bash
+yarn eslint
+yarn typecheck
+```
+
+Running tests and static analysis at once:
+
+```bash
+yarn ci
+```
+
 ## Architectural considerations
 
 Main assumption for this assignment is to keep things as simple as possible and try to not foresee future because it's very short-term project. Some parts can be not suitable for long-term project, I tried to emphasize them in this document and comments.
@@ -79,8 +118,52 @@ Other GraphQL tools used in this project:
 
 - [graphql-schema-typescript](https://github.com/dangcuuson/graphql-schema-typescript) for generating typesafe resolver types (unfortunatenly it doesn't support `graphql@>=14` yet)
 
+### Code structure
+
+I usually try to evolve module structure during project life and to be not overly attached to the current structure. I've created two main directories to prevent coupling between server framework and the rest of code:
+
+- `common` for generic and domain-related modules
+- `server` for code related strictly to GraphQL server implementation
+
+In particular I wanted to prevent usage of types that come from GraphQL schema inside `common` which required some acceptable boilerplate.
+
+Main thing that bothers me about production-grade GraphQL API project is how to maintain large schema (which seems to be realistic use case since GraphQL is often used as a facade for other APIs) and related code (like resolvers) but AFAIU it's possible to merge schemas (together with resolvers) using [`graphql-tools`](https://www.apollographql.com/docs/apollo-server/api/graphql-tools/#mergeschemas).
+
 ### Logging mechanism
 
 I've implemented simple custom logging mechanism based on built-in `console` that can be extended to more production-ready solution in the future (log level can be adjusted by setting environment variable `LOG_LEVEL=debug|info|warn|error`).
 
 It seems that built-in Apollo Server logging is quite poor (even with `debug` flag set) so I prepared extension for more informative logging.
+
+### Dependency Injection
+
+Simple constructor-based dependency injection mechanism (without IoC container) was implemented which seemed suitable for project of that size. For larger project I opt for [tsyringe](https://github.com/microsoft/tsyringe) with first class support for TS.
+
+### Security
+
+There were no requirements about authentication/authorization so the only one security mechanism is authorizing player's every move with custom token provided when joining a game.
+
+### Tests
+
+Due to limited time I wasn't able to sufficiently cover codebase with tests. I've provided **unit tests** for the most crucial game logic parts (to cover all edge cases).
+
+To ensure that main requirements are fulfilled and catch bugs in the most efficient way I've provided [set of **integration tests**](src/tests/):
+
+- human vs human scenario
+- human vs bot scenario
+- (extra) bot vs bot scenario
+
+Possible improvements for integration tests:
+
+- splitting into multiple smaller test scenarios (currently they are too large with a lot of assertions in single test)
+- providing deterministic bot AI mocks to allow more detailed assertions
+- covering also pesimistic scenarios with error handling, invalid moves etc.
+
+## Final thoughts
+
+- I believe I managed to provide solution that covers all requirement with, let's say, good enough quality assurance which was my main goal
+- I'm not proud of code quality, especially game logic related modules. In particual `GameManager` class is a bit spaghetti and has too many responsibilities. More time is required to design it more carefully
+- Domain-related types/models in `common` are a bit too much similar too GraphQL schema types which made them inconvinient to use during implementation
+- Current (in-memory) implementation of game respository handles moves history by simply maintaining array as a game's property. When switching to DB implementation it could require API refactoring and probably [resolvers chain](https://www.apollographql.com/docs/apollo-server/data/resolvers/#resolver-chains) on GraphQL side
+- [Smarter strategy](https://en.wikipedia.org/wiki/Tic-tac-toe#Strategy) for game bot could be implemented but I believe it's not core part of this assignment
+- I've implemented GraphQL subscriptions with RxJS to test that possibility and it looks promising (but of course needs further investigation if can be used without memory leaks)

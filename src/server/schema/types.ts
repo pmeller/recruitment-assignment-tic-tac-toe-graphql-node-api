@@ -27,7 +27,7 @@ export interface GQLGame {
 export interface GQLGameState {
   stage: GQLGameStage;
   currentPlayer?: GQLPlayer;
-  board: Array<Array<GQLFieldState | null> | null>;
+  board: Array<Array<GQLFieldState>>;
   winner?: GQLPlayer;
 }
 
@@ -62,7 +62,7 @@ export interface GQLMove {
 export interface GQLMutation {
   createGame?: GQLGame;
   joinGame?: GQLJoinGameResult;
-  makeMove?: GQLGameState;
+  makeMove?: GQLGame;
 }
 
 export interface GQLGameParameters {
@@ -84,7 +84,7 @@ export interface GQLMakeMoveParameters {
 }
 
 export interface GQLSubscription {
-  gameStateChanged?: GQLGameState;
+  gameStateChanged?: GQLGame;
 }
 
 /*********************************
@@ -160,7 +160,7 @@ export interface GameStateToCurrentPlayerResolver<TParent = GQLGameState, TResul
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): Promise<TResult>;
 }
 
-export interface GameStateToBoardResolver<TParent = GQLGameState, TResult = Array<Array<GQLFieldState | null> | null>> {
+export interface GameStateToBoardResolver<TParent = GQLGameState, TResult = Array<Array<GQLFieldState>>> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): Promise<TResult>;
 }
 
@@ -209,7 +209,7 @@ export interface MutationToJoinGameResolver<TParent = undefined, TResult = GQLJo
 export interface MutationToMakeMoveArgs {
   parameters: GQLMakeMoveParameters;
 }
-export interface MutationToMakeMoveResolver<TParent = undefined, TResult = GQLGameState | null> {
+export interface MutationToMakeMoveResolver<TParent = undefined, TResult = GQLGame | null> {
   (parent: TParent, args: MutationToMakeMoveArgs, context: any, info: GraphQLResolveInfo): Promise<TResult>;
 }
 
@@ -238,7 +238,7 @@ export interface GQLSubscriptionTypeResolver<TParent = undefined> {
 export interface SubscriptionToGameStateChangedArgs {
   id: string;
 }
-export interface SubscriptionToGameStateChangedResolver<TParent = undefined, TResult = GQLGameState | null> {
+export interface SubscriptionToGameStateChangedResolver<TParent = undefined, TResult = GQLGame | null> {
   resolve?: (parent: TParent, args: SubscriptionToGameStateChangedArgs, context: any, info: GraphQLResolveInfo) => Promise<TResult>;
   subscribe: (parent: TParent, args: SubscriptionToGameStateChangedArgs, context: any, info: GraphQLResolveInfo) => AsyncIterator<TResult> | Promise<AsyncIterator<TResult>>;
 }

@@ -1,13 +1,16 @@
+import { readFileSync } from 'fs'
 import { join } from 'path'
 
 import { gql } from 'apollo-server'
-import { readFile } from 'fs-extra'
+import { memoize } from 'lodash'
 
 export * from './types'
+export * from './serialization'
 
-export const getTypeDefs = async () => {
+// NOTE: usually using blocking readFileSync is not a good but this particular function is called once on start up
+export const getTypeDefs = memoize(() => {
   const filePath = join(__dirname, 'schema.graphql')
-  const rawSchema = (await readFile(filePath)).toString()
+  const rawSchema = readFileSync(filePath).toString()
 
   return gql(rawSchema)
-}
+})

@@ -3,7 +3,7 @@
 import { currentIsoTimestamp } from './datetime'
 import { noop } from './fp'
 
-export interface Logger {
+export interface ILogger {
   info(...content: any[]): void
   error(...content: any[]): void
   warn(...content: any[]): void
@@ -37,7 +37,7 @@ const createLevelLogger = (loggerName: string, logLevel: LogLevel, print: (...ar
   ...content: any[]
 ) => print(currentIsoTimestamp(), loggerName, `[${logLevel}]`, ...content)
 
-export const createLogger = (loggerName: string, logLevel = GLOBAL_LOG_LEVEL): Logger => {
+export const createLogger = (loggerName: string, logLevel = GLOBAL_LOG_LEVEL): ILogger => {
   return {
     debug: LogLevel.Debug === logLevel ? createLevelLogger(loggerName, LogLevel.Debug, console.debug) : noop,
     info: [LogLevel.Debug, LogLevel.Info].includes(logLevel)
